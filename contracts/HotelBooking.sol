@@ -6,7 +6,6 @@ contract HotelBooking {
 
     string public hotelName = "Dublin Hotel";
     address public hotelOwner;
-
     uint256 public nextBookingId = 1;
     uint256 public pendingPayout;
 
@@ -28,23 +27,29 @@ contract HotelBooking {
     mapping(uint256 => Booking) public bookings;
     mapping(uint256 => mapping(uint256 => bool)) public reservedDays;
 
-    event RoomAdded(uint256 indexed roomId, uint256 price);
+    event RoomAdded(uint256 roomId, uint256 price);
+
     event RoomBooked(
-        uint256 indexed bookingId,
-        uint256 indexed roomId,
-        address indexed guest,
+        uint256 bookingId,
+        uint256 roomId,
+        address guest,
         uint256 checkInDay,
         uint256 amountPaid
     );
-    event FundsWithdrawn(address indexed owner, uint256 amount);
 
-    // Set the hotel owner
+    event FundsWithdrawn(address owner, uint256 amount);
+
+    // Defines the hotel owner
     constructor() {
         hotelOwner = msg.sender;
     }
 
-    // Register a new room
-    function addRoom(uint256 _roomId, uint256 _pricePerNight) public {
+    // Allows the owner to register rooms
+    function addRoom(
+        uint256 _roomId,
+        uint256 _pricePerNight
+    ) public {
+
         require(msg.sender == hotelOwner, "Only hotel owner allowed");
         require(_roomId > 0, "Room ID must be greater than 0");
         require(_pricePerNight > 0, "Price must be greater than 0");
@@ -55,13 +60,18 @@ contract HotelBooking {
         emit RoomAdded(_roomId, _pricePerNight);
     }
 
-    // View room information
-    function getRoom(uint256 _roomId) public view returns (Room memory) {
+    // Returns room information
+    function getRoom(uint256 _roomId)
+        public
+        view
+        returns (Room memory)
+    {
         require(rooms[_roomId].roomId != 0, "Room does not exist");
+
         return rooms[_roomId];
     }
 
-    // Check availability for a specific day
+    // Checks if a room is available
     function isRoomAvailable(
         uint256 _roomId,
         uint256 _checkInDay
@@ -82,22 +92,26 @@ contract HotelBooking {
         return !reservedDays[_roomId][_checkInDay];
     }
 
-    // Book a room and pay with ETH
+    // Allows customers to book rooms and pay with ETH
     function bookRoom(
         uint256 _roomId,
         uint256 _checkInDay
     ) public payable {
 
         require(rooms[_roomId].roomId != 0, "Room does not exist");
+
         require(rooms[_roomId].isActive, "Room is not active");
+
         require(
             _checkInDay > block.timestamp / 1 days,
             "Date must be in the future"
         );
+
         require(
             !reservedDays[_roomId][_checkInDay],
             "Room already booked"
         );
+
         require(
             msg.value == rooms[_roomId].pricePerNight,
             "Incorrect payment amount"
@@ -105,6 +119,7 @@ contract HotelBooking {
 
         uint256 bookingId = nextBookingId;
 
+        // Saves the new booking
         bookings[bookingId] = Booking(
             bookingId,
             _roomId,
@@ -113,8 +128,13 @@ contract HotelBooking {
             msg.value
         );
 
+        // Marks the room as reserved
         reservedDays[_roomId][_checkInDay] = true;
+
+        // Records the payment
         pendingPayout += msg.value;
+
+        // Updates the next booking ID
         nextBookingId++;
 
         emit RoomBooked(
@@ -126,11 +146,12 @@ contract HotelBooking {
         );
     }
 
-    // View booking information
-    function getBooking(
-        uint256 _bookingId
-    ) public view returns (Booking memory) {
-
+    // Returns booking information
+    function getBooking(uint256 _bookingId)
+        public
+        view
+        returns (Booking memory)
+    {
         require(
             bookings[_bookingId].bookingId != 0,
             "Booking does not exist"
@@ -139,17 +160,22 @@ contract HotelBooking {
         return bookings[_bookingId];
     }
 
-    // Hotel owner withdraws received payments
+    // Allows the hotel owner to withdraw payments
     function withdrawFunds() public {
 
-        require(msg.sender == hotelOwner, "Only hotel owner allowed");
+        require(
+            msg.sender == hotelOwner,
+            "Only hotel owner allowed"
+        );
 
         uint256 amount = pendingPayout;
+
         require(amount > 0, "No funds available");
 
         pendingPayout = 0;
 
         (bool success, ) = payable(hotelOwner).call{value: amount}("");
+
         require(success, "Withdrawal failed");
 
         emit FundsWithdrawn(hotelOwner, amount);
