@@ -1,36 +1,64 @@
-The project objective aims to create a blockchain-based hotel booking system that allows customers to book rooms and make secure payments using smart contracts.
+# Hotel Booking DApp – Architecture
 
-The main actors will be the customers and the Hotel owner.
+## 1. Project Objective
 
-The booking process will be in three steps: 
-Select a Room.
-Check availability and Pay.
-Confirm Booking.
+The objective of this project is to create a hotel booking system using blockchain technology. Customers will be able to book rooms and make payments using Ethereum (ETH).
 
-The Hotel Booking system will use different smart contract functions to manage rooms, bookings and payments.
+The main idea is to make the booking process more secure and transparent by using smart contracts. The system will also prevent customers from booking the same room on the same date.
 
-constructor(): Defines the owner when the contract is created.
+## 2. System Actors
 
-addRoom(): Allows the hotel owner to add new rooms and set their prices.
+The system will have two main users:
 
-getRoom(): Allows users to view information about a room.
+- **Customer:** Can check available rooms, make bookings, pay using ETH and check booking information.
+- **Hotel Owner:** Can add new rooms, set prices and withdraw payments.
 
-isRoomAvailable(): Checks if a room is available for a specific date.
+The smart contract will work between the customer and the hotel to manage bookings and payments.
 
-bookRoom(): Allows customers to book a room and pay using ETH.
+## 3. Booking Process
 
-getBooking(): Allows users to check booking details.
+The booking process will have three steps:
 
-withdrawFunds(): Allows the hotel owner to withdraw available payments.
+1. **Select a Room:** The customer chooses a room and a date.
+2. **Check Availability and Pay:** The smart contract checks if the room is available and if the payment is correct.
+3. **Confirm Booking:** If everything is correct, the booking is saved on the blockchain and the room becomes unavailable for that date.
 
-The Hotel Booking system will use different security measures to protect bookings and payments.
+## 4. Smart Contract Functions
 
-Access Control: Only the hotel owner can add rooms and withdraw funds.
+The system will use different functions to manage rooms, bookings and payments.
 
-Payment Validation: The smart contract checks if the customer has paid the correct amount of ETH.
+- **constructor():** Defines the hotel owner when the contract is created.
+- **addRoom():** Allows the hotel owner to add rooms and set their prices.
+- **getRoom():** Shows information about a specific room.
+- **isRoomAvailable():** Checks if a room is available on a selected date.
+- **bookRoom():** Allows customers to book a room and pay with ETH.
+- **getBooking():** Shows information about a booking.
+- **withdrawFunds():** Allows the hotel owner to withdraw the money received from bookings.
 
-Double Booking Prevention: The system prevents two customers from booking the same room on the same date.
+The system will also use `struct` to organise information and `mapping` to store rooms and bookings.
 
-Digital Signatures: Ethereum uses cryptographic signatures to verify that transactions are authorised by the account sending them.
+## 5. Security Considerations
 
-Data Privacy: Personal information will not be stored directly on the blockchain because blockchain records are publicly accessible.
+The system will use different security measures to protect bookings and payments.
+
+- **Access Control:** Only the hotel owner can add rooms and withdraw money.
+- **Payment Validation:** The smart contract checks if the customer paid the correct amount of ETH.
+- **Double Booking Prevention:** Two customers cannot book the same room on the same date.
+- **Digital Signatures:** Ethereum uses digital signatures to verify that transactions are authorised by the account sending them.
+- **Data Privacy:** The system will not store personal information such as customer names or passport numbers on the blockchain.
+
+## 6. Technologies Used
+
+For this project, I will use:
+
+- **Solidity:** To create the smart contract.
+- **Remix IDE:** To write, compile and test the code.
+- **Remix VM:** To simulate the blockchain and test transactions using virtual ETH.
+
+## 7. Limitations
+
+The system will be a basic hotel booking application. Customers will only be able to book one night at a time.
+
+It will not include features such as booking cancellations, refunds or a graphical interface.
+
+The main purpose is to demonstrate how smart contracts can manage hotel bookings and payments using blockchain technology.
